@@ -13,7 +13,7 @@ $avatar = $_FILES['avatar'];
 
 if(!empty($email) and !empty($password))
 {
-    // Регистрация новога контакта
+    // Регистрация нового контакта
     $user_id = regUser($email, $password);
     // Редактировать данные контакта
     setUserInfo($name, $second_name, $login, $phone, $user_id);
