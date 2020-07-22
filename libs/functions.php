@@ -21,19 +21,24 @@ function regUser($email,$password)
     if(!empty($email) and !empty($password))
     {
         $email = htmlspecialchars($email);
-        $password = password_hash($password,PASSWORD_DEFAULT);
+        //$password = password_hash($password,PASSWORD_DEFAULT);
+        $password = md5(md5($password));
 
         $data = [
             'email' => $email,
             'password' => $password
         ];
 
-        $sql = "INSERT INTO user_secure (email,password) VALUES (:email,:password)";
+        $user_exist = checkUser($email);
+        if($user_exist != $email)
+        {
+            $sql = "INSERT INTO user_secure (email,password) VALUES (:email,:password)";
 
 
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($data);
-        $user_id =  $pdo->lastInsertId();
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($data);
+            $user_id =  $pdo->lastInsertId();
+        }
 
     }
 
@@ -43,7 +48,6 @@ function regUser($email,$password)
 // Редактировать профиль контакта
 function setUserInfo($username = '', $second_name = '', $login = '', $phone = '', $user_id)
 {
-
     // Подключение к БД
     $pdo = pdo();
 
@@ -84,7 +88,7 @@ function setUserAvatar($files = '', $user_id)
     $pdo = PDO();
 
     // Если user_id то уже работаем
-    if(!empty($user_id))
+    if(!empty($user_id) and !empty($files))
     {
 
         $orig_name = $files['name'];
@@ -118,10 +122,17 @@ function setUserAvatar($files = '', $user_id)
     }
 }
 
-// Проверка на существования контакта
-function checkUser($email, $password)
+// Проверка на существования контакта в БД
+function checkUser($email)
 {
-    // code here
+    // Подключения к БД
+    $pdo = PDO();
+
+    $stmt = $pdo->prepare("SELECT email FROM user_secure WHERE email=:email");
+    $stmt->execute(['email' => $email]);
+    $user = $stmt->fetchColumn();
+
+    return $user;
 }
 
 
@@ -132,8 +143,38 @@ function setUserPass($email, $password, $user_id)
     // code here
 }
 
-// Выход из системы
-function exitUser()
+function userAuth($email,$password)
 {
-    // code here
+    // Подключения к БД
+    $pdo = PDO();
+
+    if(!empty($email) and !empty($password))
+    {
+        // Получаем данные из past
+        $email = $email;
+        $password = md5(md5($password));
+
+        // Выборка и извлечение данных из БД
+        $stmt = $pdo->prepare("SELECT email,password FROM user_secure WHERE email=:email");
+        $stmt->execute(['email' => $email]);
+        $userInfo = $stmt->fetchObject();
+
+        // Проверка на совпадение данных
+        if(($userInfo->email == $email) and ($userInfo->password == $password))
+        {
+            return $password;
+        }
+    }
+
+}
+
+// Выход из системы
+function exitUser($get)
+{
+    if($get === 'logout')
+    {
+        unset($_SESSION['pass']);
+
+        return true;
+    }
 }
