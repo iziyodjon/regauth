@@ -162,7 +162,8 @@ function userAuth($email,$password)
         // Проверка на совпадение данных
         if(($userInfo->email == $email) and ($userInfo->password == $password))
         {
-            return $password;
+            $_SESSION['pass'] = $password;
+            header('Location: /personal.php');
         }
     }
 
@@ -174,7 +175,6 @@ function exitUser($get)
     if($get === 'logout')
     {
         unset($_SESSION['pass']);
-
-        return true;
+        header('Location: /');
     }
 }
