@@ -1,23 +1,9 @@
 <?php
 require_once ('libs/functions.php');
 session_start();
+
 //Авторизация пользователя
-$pass = userAuth($_POST['email'],$_POST['password']);
-if(!empty($pass))
-{
-    $_SESSION['pass'] = $pass;
-}
-if(isset($_SESSION['pass']) and !empty($_SESSION['pass']))
-{
-    header('Location: /personal.php');
-}
-
-/*unset($_SESSION['auth']);
-unset($_SESSION['email']);
-unset($_SESSION['password']);
-dd($_SESSION);*/
-
-
+userAuth($_POST['email'],$_POST['password']);
 
 ?>
 <!doctype html>
@@ -38,7 +24,17 @@ dd($_SESSION);*/
 <body>
 <header>
     <div class="container">
-        <h1><i class="fa fa-address-card-o" aria-hidden="true"></i> Регистрация и Авторизация</h1>
+        <div class="row">
+            <div class="col-md-9">
+                <h1><i class="fa fa-address-card-o" aria-hidden="true"></i> Регистрация и Авторизация</h1>
+            </div>
+            <div class="col-md-3">
+                <div class="user_info">
+                    <a href="/reg.php" class="reg">Регистрация</a> |
+                    <a href="/" class="reg">Авторизация</a>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 <div class="main-wrap">
